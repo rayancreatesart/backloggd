@@ -1,5 +1,7 @@
 # Game Backlog
 
+TLDR: Wanna test: https://backloggd-weld.vercel.app/
+
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/rayancreatesart/backloggd&env=DATABASE_URL,STEAMGRIDDB_API_KEY&envDescription=DATABASE_URL%20from%20Neon%20(neon.tech)%2C%20STEAMGRIDDB_API_KEY%20optional)
 
 A personal game library manager for Steam and PlayStation. Tracks your backlog, analyses games using community data and AI, and helps you decide what to play next.
