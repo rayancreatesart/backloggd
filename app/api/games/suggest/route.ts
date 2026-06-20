@@ -268,7 +268,7 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const source = searchParams.get('source') ?? 'uncategorised';
 
-  const all = getAllGames();
+  const all = await getAllGames();
   const idf = buildTagIdf(all);
   const targets = all.filter(g => g.category === source);
   const categorised = all.filter(g => g.category !== source && g.category !== 'uncategorised');

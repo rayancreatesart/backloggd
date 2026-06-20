@@ -5,7 +5,6 @@ interface SteamGame {
   appid: number;
   name: string;
   playtime_forever: number;
-  img_icon_url: string;
 }
 
 interface SteamResponse {
@@ -16,7 +15,7 @@ interface SteamResponse {
 }
 
 export async function POST() {
-  const settings = getSettings();
+  const settings = await getSettings();
 
   if (!settings.steam_api_key || !settings.steam_id) {
     return NextResponse.json({ error: 'Steam credentials not configured. Please set them in Settings.' }, { status: 400 });
@@ -40,13 +39,13 @@ export async function POST() {
     if (data.response?.game_count === 0) {
       return NextResponse.json({ error: 'No games found. Make sure your Steam library is set to public.' }, { status: 400 });
     }
-    return NextResponse.json({ error: 'No games returned. Your Steam profile may be private — set it to public in Steam privacy settings.' }, { status: 400 });
+    return NextResponse.json({ error: 'No games returned. Your Steam profile may be private.' }, { status: 400 });
   }
 
   let synced = 0;
   for (const game of games) {
     if (game.name) {
-      upsertGame(String(game.appid), game.name, game.playtime_forever);
+      await upsertGame(String(game.appid), game.name, game.playtime_forever);
       synced++;
     }
   }

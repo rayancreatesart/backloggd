@@ -1,6 +1,6 @@
 # Game Backlog
 
-[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/new/template?template=https://github.com/rayancreatesart/backloggd)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/rayancreatesart/backloggd&env=DATABASE_URL,STEAMGRIDDB_API_KEY&envDescription=DATABASE_URL%20from%20Neon%20(neon.tech)%2C%20STEAMGRIDDB_API_KEY%20optional)
 
 A personal game library manager for Steam and PlayStation. Tracks your backlog, analyses games using community data and AI, and helps you decide what to play next.
 
@@ -26,19 +26,42 @@ A personal game library manager for Steam and PlayStation. Tracks your backlog, 
 - [HowLongToBeat](https://howlongtobeat.com) — completion time estimates
 - [SteamGridDB](https://www.steamgriddb.com) — fallback cover art
 
-## Setup
+## Hosted deployment (Vercel + Neon)
+
+The quickest way to get a live URL is Vercel + Neon Postgres (both free).
+
+### 1. Create a Neon database
+
+1. Sign up at [neon.tech](https://neon.tech) (free tier is plenty)
+2. Create a new project — call it `backloggd`
+3. Copy the **Connection string** (starts with `postgres://...`)
+
+### 2. Deploy to Vercel
+
+Click the **Deploy with Vercel** button above, or:
+
+1. Go to [vercel.com/new](https://vercel.com/new) and import `rayancreatesart/backloggd`
+2. Add environment variables:
+   - `DATABASE_URL` — paste the Neon connection string
+   - `STEAMGRIDDB_API_KEY` — optional, for fallback cover art
+3. Click **Deploy**
+
+Vercel gives you a URL like `backloggd.vercel.app`. Add it to your GitHub repo's **About** section so anyone visiting the repo sees a clickable link.
+
+---
+
+## Local setup
 
 ### Prerequisites
 
 - Node.js 18+
-- A [Steam Web API key](https://steamcommunity.com/dev/apikey)
-- Your Steam 64-bit ID (find it at [steamid.io](https://steamid.io))
+- A Neon database (see above) — or any Postgres database
 
 ### 1. Clone and install
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/game-backlog.git
-cd game-backlog
+git clone https://github.com/rayancreatesart/backloggd.git
+cd backloggd
 npm install
 ```
 
@@ -48,11 +71,11 @@ npm install
 cp .env.local.example .env.local
 ```
 
-Open `.env.local` and fill in your keys:
+Open `.env.local` and fill in:
 
 ```
-STEAM_API_KEY=your_steam_api_key
-STEAMGRIDDB_API_KEY=your_steamgriddb_api_key   # optional
+DATABASE_URL=postgres://...   # from Neon
+STEAMGRIDDB_API_KEY=...       # optional
 ```
 
 ### 3. Run
@@ -61,9 +84,7 @@ STEAMGRIDDB_API_KEY=your_steamgriddb_api_key   # optional
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). The onboarding flow will walk you through connecting Steam (and optionally PSN).
-
-The SQLite database is created automatically at `~/.game-backlog/data.db` on first run — nothing is written to the project directory.
+Open [http://localhost:3000](http://localhost:3000). The onboarding flow walks you through connecting Steam and optionally PSN.
 
 ## Connecting PlayStation Network (optional)
 

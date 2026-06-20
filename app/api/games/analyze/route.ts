@@ -104,7 +104,7 @@ export async function GET() {
       };
 
       try {
-        const games = getGamesNeedingAnalysis();
+        const games = await getGamesNeedingAnalysis();
 
         if (games.length === 0) {
           send({ type: 'complete', filtered: [] });
@@ -122,12 +122,12 @@ export async function GET() {
           send({ type: 'progress', phase: 'tags', current: i + 1, total: games.length, game: game.name });
 
           const spy = await fetchSteamSpyData(game.id);
-          updateGameSteamTags(game.id, spy.tags, spy.sentiment);
+          await updateGameSteamTags(game.id, spy.tags, spy.sentiment);
 
           let hltb_main = game.hltb_main;
           if (!game.hltb_searched) {
             hltb_main = await fetchHltbMain(game.name);
-            updateGameHltb(game.id, hltb_main, game.hltb_extra, game.hltb_completionist);
+            await updateGameHltb(game.id, hltb_main, game.hltb_extra, game.hltb_completionist);
             await sleep(400);
           }
 
@@ -136,7 +136,7 @@ export async function GET() {
         }
 
         // ── Phase 2: Claude classification ────────────────────────────────
-        const apiKey = getSetting('anthropic_api_key');
+        const apiKey = await getSetting('anthropic_api_key');
 
         if (apiKey) {
           const BATCH = 15;
@@ -155,7 +155,7 @@ export async function GET() {
               for (let j = 0; j < batch.length; j++) {
                 const r = results[j];
                 if (r) {
-                  updateGameClaudeAnalysis(batch[j].id, r.game_type, r.is_multiplayer);
+                  await updateGameClaudeAnalysis(batch[j].id, r.game_type, r.is_multiplayer);
                   enriched[i + j].is_multiplayer = r.is_multiplayer;
                 }
               }
@@ -173,15 +173,15 @@ export async function GET() {
 
         for (const game of enriched) {
           if (game.is_multiplayer && game.playtime_minutes > 600) {
-            markAutoFiltered(game.id, 'multiplayer_enough', 'uncategorised');
+            await markAutoFiltered(game.id, 'multiplayer_enough', 'uncategorised');
             filtered.push({ id: game.id, name: game.name, reason: 'multiplayer_enough' });
           } else if (game.hltb_main !== null && game.playtime_minutes >= game.hltb_main * 60 * 0.85) {
-            markAutoFiltered(game.id, 'likely_completed', 'completed');
+            await markAutoFiltered(game.id, 'likely_completed', 'completed');
             filtered.push({ id: game.id, name: game.name, reason: 'likely_completed' });
           }
         }
 
-        markAnalysisDone(enriched.map(g => g.id));
+        await markAnalysisDone(enriched.map(g => g.id));
         send({ type: 'complete', filtered });
       } catch (e) {
         send({ type: 'error', message: String(e) });
@@ -204,7 +204,7 @@ export async function GET() {
 export async function POST() {
   try {
     const { resetAnalysis } = await import('@/lib/db');
-    resetAnalysis();
+    await resetAnalysis();
     return NextResponse.json({ success: true });
   } catch (e) {
     return NextResponse.json({ error: String(e) }, { status: 500 });

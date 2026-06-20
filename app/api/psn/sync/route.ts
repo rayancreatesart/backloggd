@@ -22,7 +22,7 @@ function pickCoverUrl(title: { imageUrl?: string; concept?: { media?: { images?:
 }
 
 export async function POST() {
-  const npsso = getSetting('psn_npsso');
+  const npsso = await getSetting('psn_npsso');
   if (!npsso) {
     return NextResponse.json({ error: 'PSN not connected. Please connect your PSN account first.' }, { status: 400 });
   }
@@ -51,7 +51,7 @@ export async function POST() {
         const name = title.name ?? title.localizedName ?? 'Unknown Game';
         const playtime = parseDuration(title.playDuration);
         const coverUrl = pickCoverUrl(title);
-        upsertPsnGame(id, name, playtime, coverUrl);
+        await upsertPsnGame(id, name, playtime, coverUrl);
         synced++;
       }
 

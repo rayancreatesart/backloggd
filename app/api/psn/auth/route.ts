@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
   try {
     const accessCode = await exchangeNpssoForCode(npsso.trim());
     await exchangeCodeForAccessToken(accessCode);
-    setSetting('psn_npsso', npsso.trim());
+    await setSetting('psn_npsso', npsso.trim());
     return NextResponse.json({ success: true });
   } catch {
     return NextResponse.json(

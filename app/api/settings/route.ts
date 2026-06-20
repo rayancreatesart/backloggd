@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getSettings, saveSettings, getSetting } from '@/lib/db';
 
 export async function GET() {
-  const settings = getSettings();
+  const settings = await getSettings();
   return NextResponse.json({
     steam_api_key: settings.steam_api_key ? '••••' + settings.steam_api_key.slice(-4) : '',
     steam_id: settings.steam_id,
@@ -23,24 +23,23 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Steam API key and Steam ID are required.' }, { status: 400 });
   }
 
-  const existing = {
-    steam_api_key: getSetting('steam_api_key') ?? '',
-    steam_id: getSetting('steam_id') ?? '',
-    anthropic_api_key: getSetting('anthropic_api_key') ?? '',
-    steamgriddb_api_key: getSetting('steamgriddb_api_key') ?? '',
-    psn_npsso: getSetting('psn_npsso') ?? '',
-  };
+  const [existingSteamKey, existingAnthropicKey, existingSteamgridKey, existingNpsso] = await Promise.all([
+    getSetting('steam_api_key'),
+    getSetting('anthropic_api_key'),
+    getSetting('steamgriddb_api_key'),
+    getSetting('psn_npsso'),
+  ]);
 
-  saveSettings({
-    steam_api_key: steam_api_key.startsWith('••••') ? existing.steam_api_key : steam_api_key,
+  await saveSettings({
+    steam_api_key: steam_api_key.startsWith('••••') ? (existingSteamKey ?? '') : steam_api_key,
     steam_id,
     anthropic_api_key: anthropic_api_key
-      ? (anthropic_api_key.startsWith('••••') ? existing.anthropic_api_key : anthropic_api_key)
-      : existing.anthropic_api_key,
+      ? (anthropic_api_key.startsWith('••••') ? (existingAnthropicKey ?? '') : anthropic_api_key)
+      : (existingAnthropicKey ?? ''),
     steamgriddb_api_key: steamgriddb_api_key
-      ? (steamgriddb_api_key.startsWith('••••') ? existing.steamgriddb_api_key : steamgriddb_api_key)
-      : existing.steamgriddb_api_key,
-    psn_npsso: existing.psn_npsso,
+      ? (steamgriddb_api_key.startsWith('••••') ? (existingSteamgridKey ?? '') : steamgriddb_api_key)
+      : (existingSteamgridKey ?? ''),
+    psn_npsso: existingNpsso ?? '',
   });
 
   return NextResponse.json({ success: true });

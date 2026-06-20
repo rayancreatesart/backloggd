@@ -11,14 +11,13 @@ export async function POST(req: NextRequest, { params }: { params: Params }) {
     return NextResponse.json({ error: 'recommended must be a boolean' }, { status: 400 });
   }
 
-  const game = getGame(id);
+  const game = await getGame(id);
   if (!game) return NextResponse.json({ error: 'Game not found' }, { status: 404 });
 
-  updateGameRecommendation(id, recommended);
+  await updateGameRecommendation(id, recommended);
 
-  // Record sentiment for each of this game's steam tags
   if (game.steam_tags.length > 0) {
-    recordTagSentiment(game.steam_tags, recommended);
+    await recordTagSentiment(game.steam_tags, recommended);
   }
 
   return NextResponse.json({ success: true });
