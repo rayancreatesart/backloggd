@@ -4,7 +4,7 @@ import os from 'os';
 import fs from 'fs';
 import type { Game, Settings, QuizData, Category, AutoFilterReason, CompletionReview, DroppedReview } from './types';
 
-const DB_DIR = path.join(os.homedir(), '.game-backlog');
+const DB_DIR = process.env.DATA_DIR ?? path.join(os.homedir(), '.game-backlog');
 const DB_PATH = path.join(DB_DIR, 'data.db');
 
 let _db: Database.Database | null = null;

@@ -1,5 +1,7 @@
 # Game Backlog
 
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/new/template?template=https://github.com/rayancreatesart/backloggd)
+
 A personal game library manager for Steam and PlayStation. Tracks your backlog, analyses games using community data and AI, and helps you decide what to play next.
 
 ![Game Backlog Dashboard](public/next.svg)
